@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Riftbinder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0b0820">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="style.css">
+<script>
+window.G=window.G||{};
+window._dip=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window._dip=e;if(window.G&&G.refreshInstall)G.refreshInstall();});
+window.addEventListener('appinstalled',function(){window._dip=null;window._installed=1;if(window.G&&G.refreshInstall)G.refreshInstall();});
+</script>
+</head>
+<body class="onTitle">
+<div id="app">
+  <canvas id="cv"></canvas>
+
+  <!-- overworld HUD -->
+  <div id="hud">
+    <div class="hud-l"><div id="hud-loc"></div><div id="hud-d"></div><div id="hud-coin"></div></div>
+    <div id="hud-obj"></div>
+    <canvas id="mini" width="156" height="96"></canvas>
+    <button id="btnMenu" data-act="menu" class="touchbtn">☰</button>
+  </div>
+  <div id="prompt"></div>
+  <div id="banner"></div>
+  <div id="worldTouch" class="touchlayer">
+    <div id="joy"><div id="knob"></div></div>
+    <button id="btnA" data-act="interact" class="round big">A</button>
+  </div>
+
+  <!-- duel HUD -->
+  <div id="duelhud">
+    <div class="fbar ally"><div class="sp" id="d-aimg" style="--s:.55"></div><div class="fm"><div class="nm"><span id="d-aname"></span> <small id="d-alv"></small> <small id="d-atype"></small></div><div class="bar hp"><i id="d-ahp"></i><span id="d-ahpt"></span></div><div class="bar en"><i id="d-aen"></i></div><div class="bar fo"><i id="d-afo"></i></div></div></div>
+    <div class="fbar enemy"><div class="fm"><div class="nm"><small id="d-etype"></small> <span id="d-ename"></span> <small id="d-elv"></small></div><div class="bar hp"><i id="d-ehp"></i><span id="d-ehpt"></span></div></div><div class="sp mir" id="d-eimg" style="--s:.55"></div></div>
+    <div id="d-label"></div>
+    <div id="d-call"></div>
+    <div id="d-hint"></div>
+    <div id="d-summon"></div>
+  </div>
+  <div id="duelTouch" class="touchlayer">
+    <div class="dpad"><button data-hold="left" class="round">◀</button><button data-hold="right" class="round">▶</button><button data-act="jump" class="round">▲</button><button data-act="dash" class="round sm">⇢<small>dash</small></button></div>
+    <div class="hand" id="d-hand"></div>
+    <div class="acts">
+      <button data-act="slash" class="round big">⚔<small>A</small></button>
+      <button data-act="shot" class="round big">✦<small>S</small></button>
+      <button data-act="special" class="round big">✹<small>D</small></button>
+      <button data-act="ultimate" class="round big" id="d-ult">★<small>F</small></button>
+    </div>
+    <div class="utils">
+      <button data-act="gift" class="round sm" id="d-gift">🎁</button>
+      <button data-act="bind" class="round sm" id="d-bind">◉<small>bind</small></button>
+      <button data-act="swap" class="round sm" id="d-swap">⇄<small>swap</small></button>
+      <button data-act="tonic" class="round sm" id="d-tonic">🧪</button>
+      <button data-act="pause" class="round sm" id="d-pause">⏸</button>
+    </div>
+  </div>
+
+  <div id="ui"></div>
+  <div id="toast"></div>
+  <div id="rotate"><div>📱 ↻<br>Rotate your phone to landscape</div></div>
+</div>
+<script src="js/audio.js"></script>
+<script src="js/data-cards.js"></script>
+<script src="js/data-daemons.js"></script>
+<script src="js/core.js"></script>
+<script src="js/city.js"></script>
+<script src="js/world.js"></script>
+<script src="js/duel.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
