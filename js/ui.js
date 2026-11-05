@@ -243,6 +243,7 @@ function tabOptions(body){
   const S=R.S,st=S.settings;
   body.innerHTML=`<div class="opts"><div class="orow"><span>Sound effects</span><button class="btn ${st.sound?'':'secondary'}" data-o="sound">${st.sound?'On':'Off'}</button></div><div class="orow"><span>Music</span><button class="btn ${st.music?'':'secondary'}" data-o="music">${st.music?'On':'Off'}</button></div><div class="orow"><span>Screen shake</span><button class="btn ${st.shake?'':'secondary'}" data-o="shake">${st.shake?'On':'Off'}</button></div>
   <div class="orow"><span>Difficulty</span><div class="seg">${['easy','normal','hard'].map(d=>`<button class="${st.diff===d?'on':''}" data-d="${d}">${d}</button>`).join('')}</div></div>
+  <div class="orow"><span>Battle speed</span><div class="seg">${['slow','normal','fast'].map(d=>`<button class="${(st.speed||'normal')===d?'on':''}" data-sp="${d}">${d}</button>`).join('')}</div></div>
   <div class="orow"><span>Hero style</span><div class="seg">${R.HEROES.map((h,i)=>`<button class="${(R.S.hero|0)===i?'on':''}" data-hs="${i}">${h.n}</button>`).join('')}</div></div>
   <div class="orow"><span>Guide arrow</span><button class="btn ${R.world.guide?'':'secondary'}" data-o="guide">${R.world.guide?'On':'Off'}</button></div>
   <div class="actions"><button class="btn" data-a="save">💾 Save now</button><button class="btn secondary" data-a="title">Main menu</button><button class="btn danger" data-a="wipe">Delete save</button></div>
@@ -250,6 +251,7 @@ function tabOptions(body){
   body.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;R.sfx('select');
     if(b.dataset.o){const k=b.dataset.o;if(k==='guide')R.world.guide=!R.world.guide;else{st[k]=!st[k];if(k==='music'){if(st.music)R.music(R.world.musicNow||'town');else G.audio.stop();}}tabOptions(body);return;}
     if(b.dataset.d){st.diff=b.dataset.d;tabOptions(body);return;}
+    if(b.dataset.sp){st.speed=b.dataset.sp;tabOptions(body);return;}
     if(b.dataset.hs!==undefined){R.S.hero=+b.dataset.hs;tabOptions(body);return;}
     const a=b.dataset.a;
     if(a==='save'){R.save();R.toast('Game saved.');}

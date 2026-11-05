@@ -42,10 +42,10 @@ body.inDuel #duelhud{display:block}
 .touchlayer{position:absolute;inset:0;pointer-events:none;display:none}
 body.inWorld #worldTouch{display:block}
 body.inDuel #duelTouch{display:block}
-@media (hover:hover) and (pointer:fine){body:not(.touched):not(.forcetouch) #worldTouch #joy{display:none}body:not(.touched):not(.forcetouch) #btnA{display:none}body:not(.touched):not(.forcetouch) #duelTouch .dpad,body:not(.touched):not(.forcetouch) #duelTouch .acts,body:not(.touched):not(.forcetouch) #duelTouch .utils{display:none}}
-.touchlayer button,.touchlayer #joy{pointer-events:auto}
-#joy{position:absolute;left:calc(26px + var(--safe-l));bottom:calc(22px + var(--safe-b));width:132px;height:132px;border-radius:50%;background:radial-gradient(rgba(123,92,255,.25),rgba(12,8,40,.45));border:3px solid rgba(160,140,255,.55);touch-action:none}
-#knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(#d8ccff,#7b5cff);border:3px solid #fff;opacity:.85;transition:transform .04s}
+@media (hover:hover) and (pointer:fine){body:not(.touched):not(.forcetouch) #worldTouch #joy{display:none}body:not(.touched):not(.forcetouch) #btnA{display:none}body:not(.touched):not(.forcetouch) #duelTouch #djoy,body:not(.touched):not(.forcetouch) #d-dash,body:not(.touched):not(.forcetouch) #duelTouch .acts,body:not(.touched):not(.forcetouch) #duelTouch .utils{display:none}}
+.touchlayer button,.touchlayer #joy,.touchlayer #djoy{pointer-events:auto}
+#joy,#djoy{position:absolute;left:calc(26px + var(--safe-l));bottom:calc(22px + var(--safe-b));width:132px;height:132px;border-radius:50%;background:radial-gradient(rgba(123,92,255,.25),rgba(12,8,40,.45));border:3px solid rgba(160,140,255,.55);touch-action:none}
+#knob,#dknob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:radial-gradient(#d8ccff,#7b5cff);border:3px solid #fff;opacity:.85;transition:transform .04s}
 .round{border-radius:50%;border:3px solid rgba(255,255,255,.55);background:radial-gradient(rgba(150,120,255,.55),rgba(30,18,90,.75));color:#fff;font-size:22px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1;box-shadow:0 3px 0 rgba(0,0,0,.45);padding:0;touch-action:none}
 .round small{font-size:9px;opacity:.8;font-weight:700;margin-top:1px}
 .round.big{width:62px;height:62px}
@@ -86,11 +86,6 @@ body.inDuel #duelTouch{display:block}
 @keyframes summon{0%{opacity:0;transform:scale(.3) rotate(-8deg)}20%{opacity:1;transform:scale(1.05) rotate(0)}70%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.4) translateY(-40px)}}
 
 /* duel touch layout */
-.dpad{position:absolute;left:calc(12px + var(--safe-l));bottom:calc(10px + var(--safe-b));display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,52px);gap:6px}
-.dpad [data-hold=left]{grid-column:1;grid-row:2}.dpad [data-hold=right]{grid-column:3;grid-row:2}
-.dpad [data-act=jump]{grid-column:2;grid-row:1;width:52px;height:52px}
-.dpad [data-act=dash]{grid-column:2;grid-row:2;width:52px;height:52px;font-size:18px}
-.dpad .round{width:52px;height:52px}
 .acts{position:absolute;right:calc(12px + var(--safe-r));bottom:calc(10px + var(--safe-b));display:grid;grid-template-columns:repeat(2,62px);grid-template-rows:repeat(2,62px);gap:8px}
 .acts .round.big{width:62px;height:62px}
 .acts [data-act=ultimate]{border-color:#ffd24a}
@@ -259,7 +254,6 @@ body.portrait #rotate{display:flex}
   .dialog{min-height:78px;padding:7px 12px}.dline{font-size:13px;min-height:36px}.portrait{width:54px;height:72px;background-size:162px 288px}
   .fbar{width:min(38%,300px)}
   .hand .cardbtn{width:52px}
-  .dpad{grid-template-columns:repeat(3,46px);grid-template-rows:repeat(2,46px)}.dpad .round,.dpad [data-act=jump],.dpad [data-act=dash]{width:46px;height:46px}
   .acts{grid-template-columns:repeat(2,54px);grid-template-rows:repeat(2,54px)}.acts .round.big{width:54px;height:54px}
   .utils{top:calc(48px + var(--safe-t))}
   .round.sm{width:40px;height:40px}
@@ -285,3 +279,8 @@ body.portrait #rotate{display:flex}
 
 .panel .actions{position:sticky;bottom:-14px;background:linear-gradient(rgba(21,16,58,0),var(--panel) 35%);padding:10px 0 4px;margin-top:8px}
 .menu .panel .actions{position:static;background:none}
+
+#djoy{left:calc(18px + var(--safe-l));bottom:calc(12px + var(--safe-b));width:118px;height:118px}
+#djoy #dknob{width:50px;height:50px;margin:-25px 0 0 -25px}
+#d-dash{position:absolute;right:calc(152px + var(--safe-r));bottom:calc(14px + var(--safe-b));width:56px;height:56px;font-size:20px}
+@media (max-height:440px){#djoy{width:106px;height:106px}#d-dash{right:calc(130px + var(--safe-r));width:50px;height:50px}}

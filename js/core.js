@@ -131,7 +131,7 @@ const KEYMAP_DUEL={ArrowUp:'jump',' ':'jump',Shift:'dash',a:'slash',A:'slash',s:
 R.onAct=null; // set by active mode
 R.axis=function(){
   const k=R.keys;let x=(k.ArrowRight||k.d||k.D?1:0)-(k.ArrowLeft||k.a||k.A?1:0),y=(k.ArrowDown||k.s||k.S?1:0)-(k.ArrowUp||k.w||k.W?1:0);
-  if(R.mode==='duel'){x=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0)+(R.hold.right?1:0)-(R.hold.left?1:0);y=0;}
+  if(R.mode==='duel'){x=(k.ArrowRight?1:0)-(k.ArrowLeft?1:0)+(R.hold.right?1:0)-(R.hold.left?1:0)+R.joy.x;y=0;}
   else{x+=R.joy.x;y+=R.joy.y;}
   const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}
   return{x,y};
@@ -151,13 +151,17 @@ R.setupInput=function(){
   document.addEventListener('contextmenu',e=>e.preventDefault());
   document.addEventListener('gesturestart',e=>e.preventDefault());
   // virtual joystick
-  const base=$('#joy'),knob=$('#knob');let jid=null;
-  const jm=ev=>{const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=(ev.clientX-cx)/(r.width/2),dy=(ev.clientY-cy)/(r.height/2);const d=Math.hypot(dx,dy);if(d>1){dx/=d;dy/=d;}
-    R.joy.x=Math.abs(dx)<.18?0:dx;R.joy.y=Math.abs(dy)<.18?0:dy;knob.style.transform=`translate(${dx*r.width*.32}px,${dy*r.height*.32}px)`;};
-  base.addEventListener('pointerdown',e=>{jid=e.pointerId;base.setPointerCapture(jid);R.audioInit();jm(e);e.preventDefault();});
-  base.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e);});
-  const jend=e=>{if(e.pointerId===jid){jid=null;R.joy.x=R.joy.y=0;knob.style.transform='';}};
-  base.addEventListener('pointerup',jend);base.addEventListener('pointercancel',jend);
+  const mkStick=(baseId,knobId,jumpFlick)=>{
+    const base=$(baseId),knob=$(knobId);if(!base||!knob)return;let jid=null,armed=false;
+    const jm=ev=>{const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=(ev.clientX-cx)/(r.width/2),dy=(ev.clientY-cy)/(r.height/2);const d=Math.hypot(dx,dy);if(d>1){dx/=d;dy/=d;}
+      R.joy.x=Math.abs(dx)<.18?0:dx;R.joy.y=Math.abs(dy)<.18?0:dy;knob.style.transform=`translate(${dx*r.width*.32}px,${dy*r.height*.32}px)`;
+      if(jumpFlick){if(dy<-.55&&!armed){armed=true;if(R.onAct)R.onAct('jump');}else if(dy>-.3)armed=false;}};
+    base.addEventListener('pointerdown',e=>{jid=e.pointerId;base.setPointerCapture(jid);R.audioInit();jm(e);e.preventDefault();});
+    base.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e);});
+    const jend=e=>{if(e.pointerId===jid){jid=null;armed=false;R.joy.x=R.joy.y=0;knob.style.transform='';}};
+    base.addEventListener('pointerup',jend);base.addEventListener('pointercancel',jend);
+  };
+  mkStick('#joy','#knob',false);mkStick('#djoy','#dknob',true);
   // buttons: data-act (tap) / data-hold (held)
   document.addEventListener('pointerdown',e=>{
     const b=e.target.closest&&e.target.closest('[data-act],[data-hold]');if(!b||!b.closest('.touchlayer'))return;
@@ -168,5 +172,6 @@ R.setupInput=function(){
   const up=e=>{R.$$('.touchlayer .down').forEach(b=>b.classList.remove('down'));R.hold={};};
   document.addEventListener('pointerup',up);document.addEventListener('pointercancel',up);
 };
+R.battleScale=()=>({slow:.7,normal:.85,fast:1})[(R.S&&R.S.settings&&R.S.settings.speed)||'normal']||.85;
 R.fmtTime=s=>{s|=0;const h=(s/3600)|0,m=((s%3600)/60)|0;return h?h+'h '+m+'m':m+'m';};
 })(window.R=window.R||{});

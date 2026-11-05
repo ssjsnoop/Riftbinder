@@ -1,4 +1,4 @@
-const VER='riftbinder-v7';
+const VER='riftbinder-v8';
 const CORE=['./','index.html','style.css','manifest.json','icon-192.png','icon-512.png','js/audio.js','js/data-cards.js','js/data-daemons.js','js/core.js','js/city.js','js/world.js','js/duel.js','js/ui.js','js/main.js','tiles/city.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VER).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VER).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});

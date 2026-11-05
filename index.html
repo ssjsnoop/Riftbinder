@@ -48,7 +48,7 @@ window.addEventListener('appinstalled',function(){window._dip=null;window._insta
     <div id="d-summon"></div>
   </div>
   <div id="duelTouch" class="touchlayer">
-    <div class="dpad"><button data-hold="left" class="round">◀</button><button data-hold="right" class="round">▶</button><button data-act="jump" class="round">▲</button><button data-act="dash" class="round sm">⇢<small>dash</small></button></div>
+    <div id="djoy" class="stick"><div id="dknob" class="knob"></div></div>
     <div class="hand" id="d-hand"></div>
     <div class="acts">
       <button data-act="slash" class="round big">⚔<small>A</small></button>
@@ -56,6 +56,7 @@ window.addEventListener('appinstalled',function(){window._dip=null;window._insta
       <button data-act="special" class="round big">✹<small>D</small></button>
       <button data-act="ultimate" class="round big" id="d-ult">★<small>F</small></button>
     </div>
+    <button data-act="dash" class="round" id="d-dash">⇢<small>dash</small></button>
     <div class="utils">
       <button data-act="gift" class="round sm" id="d-gift">🎁</button>
       <button data-act="bind" class="round sm" id="d-bind">◉<small>bind</small></button>

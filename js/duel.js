@@ -233,7 +233,7 @@ function bind(){
 function timerDec(f,dt){for(const k in f.cool)f.cool[k]=Math.max(0,f.cool[k]-dt);for(const k of ['invul','shield','dash','speedBoost','overdrive','hurt','attack','root','slow','stun','dot'])f[k]=Math.max(0,f[k]-dt);}
 D.frame=function(dt){
   if(!B){return;}
-  if(!B.paused)update(dt);
+  if(!B.paused)update(dt*R.battleScale());
   draw(dt);
   lastHudT+=dt;if(lastHudT>.06){lastHudT=0;updateHud(false);}
 };
@@ -369,7 +369,7 @@ async function endDuel(outcome){
   try{if(outcome!=='lose'||true)await R.report(res);}catch(e){console.error(e);}
   const r=resolveFn;resolveFn=null;if(r)r(res);
 }
-R.DTIPS={duel1:'⚔ Slash · ✦ Shot · ✹ Special · ▲ jump. Dodge the red <b>!</b> wind-ups. Land hits to fill your Energy.',cards_d:'Tap a <b>card</b> to cast it. Cards cost Focus (blue bar), then recharge.',bind:'It is weak! Tap <b>◉ Bind</b> to try to capture it (uses an Orb).',ult:'Energy is full! Tap <b>★</b> for your Ultimate.',lowhp:'Low HP! Use a 🧪 Tonic, or ⇄ swap to another Daemon.'};
+R.DTIPS={duel1:'Stick: move left/right, <b>flick up</b> to jump. ⚔ Slash · ✦ Shot · ✹ Special · ⇢ Dash. Dodge the red <b>!</b> wind-ups.',cards_d:'Tap a <b>card</b> to cast it. Cards cost Focus (blue bar), then recharge.',bind:'It is weak! Tap <b>◉ Bind</b> to try to capture it (uses an Orb).',ult:'Energy is full! Tap <b>★</b> for your Ultimate.',lowhp:'Low HP! Use a 🧪 Tonic, or ⇄ swap to another Daemon.'};
 const dq=[];let dBusy=false;
 function dpump(){if(dBusy||!dq.length)return;dBusy=true;const h=$('#d-hint');h.innerHTML=dq.shift();h.classList.add('on');setTimeout(()=>{h.classList.remove('on');setTimeout(()=>{dBusy=false;dpump();},350);},6500);}
 R.dtip=function(key){const S=R.S;if(!S||S.flags['t_'+key])return;S.flags['t_'+key]=1;dq.push(R.DTIPS[key]);dpump();};
