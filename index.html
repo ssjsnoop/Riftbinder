@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="style.css">
 <script>
+function _sv(){document.documentElement.style.setProperty('--vh',(window.innerHeight*0.01)+'px');}_sv();addEventListener('resize',_sv);addEventListener('orientationchange',function(){setTimeout(_sv,250)});
 window.G=window.G||{};
 window._dip=null;
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window._dip=e;if(window.G&&G.refreshInstall)G.refreshInstall();});

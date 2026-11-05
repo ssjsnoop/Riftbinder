@@ -176,7 +176,7 @@ async function handle(it){
   if(it.kind==='mob'){await engage(it.m);return;}
 }
 async function openChest(c){
-  const S=R.S,th=R.DISTRICTS[c.d];c.open=true;S.chests[c.id]=1;R.sfx('chest');
+  const S=R.S,th=R.DISTRICTS[c.d];c.open=true;S.chests[c.id]=1;R.sfx('chest');setTimeout(()=>R.tipSoft('chest'),2600);
   const tier=c.d,r=Math.random();let msg='';
   if(r<.34){const n=R.ri(60,120)+tier*45;R.addCoins(n);msg=`<b>${n} coins</b>`;}
   else if(r<.52){const n=R.ri(2,3);S.orbs+=n;msg=`<b>${n} Binding Orbs</b>`;}
@@ -193,6 +193,7 @@ async function npcTalk(n){
   if(n.kind==='chal'){
     if(S.beaten[n.key]){await R.say(sp,R.pick(CHAL_DONE));return;}
     const th=R.DISTRICTS[n.d];
+    await R.tip('chal');
     await R.say(sp,n.pre);
     if(!R.alive()){await R.say(sp,'Your Daemons look worn out. Visit a Clinic first!');return;}
     const sp0=pickSpecies([dtype(n.elem)].concat(th.types),n.d,{});
@@ -232,6 +233,7 @@ async function rivalTalk(n,sp){
 async function keeperTalk(n,sp){
   const S=R.S,th=R.DISTRICTS[n.d];
   if(S.cleared.includes(n.d)){await R.say(sp,`You carry my Gift, ${S.name}. Wield ${R.GIFTS[th.gift].name} wisely.`);return;}
+  await R.tip('keeper');
   await R.say(sp,`${th.blurb}`);
   await R.say(sp,`I am ${th.keeperName}. The Rift shard in this district answers only to a Binder who can defeat me. Recommended level: ${th.lvl}+.`);
   const ok=await R.confirm('Challenge '+th.keeperName+'?','Fight now','Not yet');
@@ -294,7 +296,7 @@ function updateMobs(dt){
     if(dd>34){world.mobs.splice(i,1);continue;}
     const spd=R.D(m.id).spd;const base=1.5+spd/110;
     const aggro=4.6+(R.D(m.id).rar==='legendary'?1.5:0);
-    if(m.state!=='gone'&&pz===2&&dd<aggro&&m.wait<=0){if(m.state!=='chase'){m.alert=.7;R.sfx('select');}m.state='chase';}
+    if(m.state!=='gone'&&pz===2&&dd<aggro&&m.wait<=0){if(m.state!=='chase'){m.alert=.7;R.sfx('select');R.tipSoft('chase');}m.state='chase';}
     else if(m.state==='chase'&&(pz!==2||dd>aggro*1.6)){m.state='idle';m.t=1;}
     if(m.state==='chase'){
       const ux=(p.x-m.x)/(dd||1),uy=(p.y-m.y)/(dd||1);const v=(base+1.0)*dt;
@@ -321,7 +323,7 @@ async function engage(m){
 
 /* ---------- bus stop ---------- */
 R.busStop=async function(stop){
-  const S=R.S,city=world.city;
+  await R.tip('bus');const S=R.S,city=world.city;
   const opts=[];
   for(let d=0;d<9;d++){if(!S.visited[d])continue;if(d===world.distAt(world.player.x,world.player.y)&&false)continue;opts.push(d);}
   const choice=await R.pickList('Bus Stop','Where to? (free)',opts.map(d=>({v:d,t:`<b>${R.DISTRICTS[d].name}</b> <small>· ${d===8?'Lv 45+':'Lv '+R.DISTRICTS[d].lvl+'+'}</small>`})));

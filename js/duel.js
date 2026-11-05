@@ -52,7 +52,7 @@ D.start=function(opts){
     R.music(B.kind==='final'?'final':B.kind==='keeper'||B.kind==='rival'?(B.kind==='rival'?'rival':'boss'):G.audio.battleTrack?G.audio.battleTrack():'battle');
     R.sfx('encounter');{const bn=$('#banner');if(bn)bn.classList.remove('on');}
     $('#d-label').textContent=B.kind==='wild'?'✦ A WILD '+R.D(B.foe.id).name.toUpperCase()+' APPEARED ✦':B.kind==='keeper'?'✦ KEEPER DUEL · '+B.label.toUpperCase()+' ✦':B.kind==='final'?'✦ THE RIFT WIELDER ✦':B.kind==='rival'?'✦ RIVAL DUEL · KADE ✦':'✦ SPAR · '+B.label.toUpperCase()+' ✦';
-    if(!S.flags.coach){S.flags.coach=1;$('#d-hint').innerHTML='◀ ▶ move · ▲ jump · <b>Slash/Shot/Special</b> on the right · tap a <b>Card</b> to cast it · weaken a wild Daemon then <b>Bind</b>!';$('#d-hint').classList.add('on');setTimeout(()=>$('#d-hint').classList.remove('on'),9000);}
+    R.dtip('duel1');if(B.hand.some(Boolean))R.dtip('cards_d');
   });
 };
 function onAct(a){
@@ -369,7 +369,11 @@ async function endDuel(outcome){
   try{if(outcome!=='lose'||true)await R.report(res);}catch(e){console.error(e);}
   const r=resolveFn;resolveFn=null;if(r)r(res);
 }
-function cleanupUi(){$('#d-summon').classList.remove('on');$('#d-call').classList.remove('on');$('#d-hint').classList.remove('on');}
+R.DTIPS={duel1:'⚔ Slash · ✦ Shot · ✹ Special · ▲ jump. Dodge the red <b>!</b> wind-ups. Land hits to fill your Energy.',cards_d:'Tap a <b>card</b> to cast it. Cards cost Focus (blue bar), then recharge.',bind:'It is weak! Tap <b>◉ Bind</b> to try to capture it (uses an Orb).',ult:'Energy is full! Tap <b>★</b> for your Ultimate.',lowhp:'Low HP! Use a 🧪 Tonic, or ⇄ swap to another Daemon.'};
+const dq=[];let dBusy=false;
+function dpump(){if(dBusy||!dq.length)return;dBusy=true;const h=$('#d-hint');h.innerHTML=dq.shift();h.classList.add('on');setTimeout(()=>{h.classList.remove('on');setTimeout(()=>{dBusy=false;dpump();},350);},6500);}
+R.dtip=function(key){const S=R.S;if(!S||S.flags['t_'+key])return;S.flags['t_'+key]=1;dq.push(R.DTIPS[key]);dpump();};
+function cleanupUi(){dq.length=0;$('#d-summon').classList.remove('on');$('#d-call').classList.remove('on');$('#d-hint').classList.remove('on');}
 
 /* ---------- pause ---------- */
 async function openPause(){
@@ -410,8 +414,11 @@ function updateHud(force){
   $('#d-aen').parentElement.classList.toggle('full',a.energy>=100);
   const gi=S.gift,gOk=ownedGifts().includes(gi);
   const gb=$('#d-gift');gb.innerHTML=gOk?R.GIFTS[gi].icon:'🎁';gb.classList.toggle('cant',!gOk||a.cool.gift>0);gb.dataset.cd=gOk&&a.cool.gift>0?Math.ceil(a.cool.gift):'';
-  const bb=$('#d-bind');bb.dataset.n=S.orbs;bb.classList.toggle('ready',B.kind==='wild'&&e.hp/e.maxHp<=.38&&S.orbs>0);bb.classList.toggle('cant',B.kind!=='wild');
+  const bb=$('#d-bind');bb.dataset.n=S.orbs;bb.classList.toggle('ready',B.kind==='wild'&&e.hp/e.maxHp<=.38&&S.orbs>0);bb.classList.toggle('cant',B.kind!=='wild');const weak=B.kind==='wild'&&e.hp/e.maxHp<=.38;bb.style.display=weak?'':'none';bb.classList.toggle('cant',weak&&S.orbs<=0);
   $('#d-tonic').dataset.n=S.tonics;
+  if(B.kind==='wild'&&e.hp/e.maxHp<=.38&&S.orbs>0)R.dtip('bind');
+  if(a.energy>=100)R.dtip('ult');
+  if(a.hp/a.maxHp<.3)R.dtip('lowhp');
   const sw=R.$$('#d-swap');
   const ult=$('#d-ult');ult.classList.toggle('ready',a.energy>=100);
   R.$$('[data-act="slash"],[data-act="shot"],[data-act="special"]').forEach(b=>{const k=b.dataset.act==='slash'?'light':b.dataset.act==='shot'?'ranged':'special';b.classList.toggle('cant',a.cool[k]>0);});

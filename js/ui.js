@@ -55,7 +55,7 @@ R.confirm=function(title,yes,no){
 
 /* ---------- clinic & market ---------- */
 R.clinic=async function(){
-  const S=R.S;
+  await R.tip('clinic');const S=R.S;
   const hurt=S.party.some(p=>p.hp<p.maxHp);
   await R.say({name:'Clinic Nurse',spr:'healer'},hurt?'Rough out there! Sit down — let me patch up your Daemons.':'Your party looks perfectly healthy. Take a few supplies for the road!');
   R.healAll();R.sfx('heal');
@@ -64,7 +64,7 @@ R.clinic=async function(){
   R.toast('✦ Party fully healed · Orbs/Tonics topped up to a minimum',2200);R.save();R.updateHud();
 };
 R.market=async function(d,tab){
-  const S=R.S;
+  await R.tip('market');const S=R.S;
   return new Promise(res=>{
     const tier=Math.min(d,7);
     const goods=[
@@ -163,6 +163,7 @@ function drawMenu(){
   menuEl.addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(b){menuTab=b.dataset.t;R.sfx('select');drawMenu();}if(e.target.closest('[data-close]')){R.sfx('back');closeMenu();}});
   const body=$('#mbody',menuEl);
   ({party:tabParty,binder:tabBinder,dex:tabDex,items:tabItems,map:tabMap,options:tabOptions})[menuTab](body);
+  {const hk=R.MENUTIPS[menuTab];if(hk&&!R.S.flags['t_m_'+menuTab]){R.S.flags['t_m_'+menuTab]=1;body.insertAdjacentHTML('afterbegin',`<div class="tipbox">💡 ${hk}</div>`);}}
 }
 const hpPct=p=>Math.round(100*p.hp/p.maxHp);
 function tabParty(body){
@@ -296,6 +297,27 @@ R.titleScreen=function(){
   });
   window.G.refreshInstall=()=>{const b=$('#btnInstall');if(b)b.classList.toggle('hidden',!!(R.isInstalled()));};
 };
+
+/* ---------- first-time tips ---------- */
+R.TIPS={
+ start:['Welcome, Binder!',`<p>Daemons are pouring out of the Astral Rift. <b>Bind</b> them, collect <b>Spirit Cards</b>, and beat all <b>8 Keepers</b> to open the Rift Plaza.</p><p>🕹️ Stick = walk · <b>A</b> = talk / open · ☰ = menu · tap the minimap for the city map. The gold text at the top always tells you what to do next.</p>`],
+ cards:['Your Spirit Card',`<p>Cards are <b>spells</b> you cast in duels. Your Daemon does the fighting; tap a card at the bottom of the screen to use it.</p><p>Open ☰ → <b>Binder</b> to pick the 3 cards in your hand. Win duels and bind Daemons to earn more.</p>`],
+ clinic:['Clinic',`<p>Heals your whole team for free. If you lose a duel you wake up at one (and drop a few coins).</p>`],
+ market:['Market',`<p>Spend coins on <b>Binding Orbs</b> (you need one to bind a Daemon), <b>Tonics</b> (heal in a duel) and <b>Spirit Packs</b> (random cards).</p>`],
+ bus:['Bus Stop',`<p>Ride to any district you have already visited. Handy for getting back to a Clinic or a Keeper.</p>`],
+ keeper:['A District Keeper',`<p>Keepers are boss duels. Beat one to earn a <b>Gift</b>, a special power you can use in duels (the 🎁 button). Beat all 8 to open the Rift Plaza.</p><p>Level up first, and bring a Daemon whose element beats theirs.</p>`],
+ chal:['A Challenger',`<p>Challengers (the red <b>!</b>) duel you for a <b>free card</b> when you win. Each one can only be beaten once.</p>`]
+};
+R.tip=async function(key){
+  const S=R.S;if(!S||S.flags['t_'+key]||!R.TIPS[key])return;S.flags['t_'+key]=1;
+  const t=R.TIPS[key],wd=R.world,was=wd.paused;wd.paused=true;
+  await new Promise(res=>{const w=R.modal(`<div class="eyebrow">Tip</div><h2>${t[0]}</h2>${t[1]}<div class="actions"><button class="btn" data-x>Got it</button></div>`,'tipm small');
+    w.addEventListener('click',e=>{if(e.target.closest('[data-x]')){w.close();res();}});});
+  wd.paused=was;
+};
+R.SOFT={chase:'⚠️ A wild Daemon spotted you! They only chase on <b>grass, gravel and plaza stone</b>. Roads and sidewalks are safe.',chest:'🎁 Chests hold coins, Orbs, Tonics or cards. Each opens only once.'};
+R.tipSoft=function(key){const S=R.S;if(!S||S.flags['t_'+key])return;S.flags['t_'+key]=1;R.toast(R.SOFT[key],8000);};
+R.MENUTIPS={party:'Tap a Daemon to see its moves and options. Your <b>lead</b> fights first. Up to 6 travel with you, extras go to storage, and ⇄ swaps Daemons in a duel.',binder:'Tap a card to see what it does. The 3 slots at the top are your <b>hand</b> for duels. Owning more cards gives <b>set bonuses</b> to all your Daemons.',dex:'Every Daemon you meet gets listed here. Bind them all!',items:'Keeper Gifts are special powers. Equip one here, then use it in a duel with the 🎁 button.'};
 function howTo(){
   const w=R.modal(`<h2>How to play</h2><div class="how"><p><b>The idea:</b> the Astral Rift split open over Tiny City. <b>Daemons</b> pour out — and you fight beside one while playing <b>Spirit Cards</b> from your Binder hand.</p>
   <p>🚶 <b>Explore</b> with the stick (or arrows/WASD). Daemons only chase you on <b>grass, gravel and plaza stone</b> — sidewalks and roads are safe.</p>
@@ -334,6 +356,7 @@ function starterPick(name,hero){
     R.S.seen[id]=true;
     await R.enterWorld();
     await R.revealCards([res]);
+    await R.tip('start');await R.tip('cards');
   });
 }
 R.enterWorld=async function(){
