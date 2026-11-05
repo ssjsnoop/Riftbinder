@@ -9,7 +9,7 @@ window.addEventListener('load',async()=>{
   const ld=document.createElement('div');ld.id='loading';ld.innerHTML='<div class="spin"></div><div>Building Tiny City…</div>';document.body.appendChild(ld);
   try{
     await R.initWorld();
-    ['hero','archivist','healer','rival','final_wielder','guardian_ember','guardian_tide','guardian_grove','guardian_storm','guardian_stone','guardian_shadow','guardian_frost','guardian_venom'].forEach(n=>R.npcImg(n));
+    ['hero_0','hero_1','hero_2','hero_3','archivist','healer','rival','final_wielder','guardian_ember','guardian_tide','guardian_grove','guardian_storm','guardian_stone','guardian_shadow','guardian_frost','guardian_venom'].forEach(n=>R.npcImg(n));
     [1,11,21,31,41,51,61,71,81,91].forEach(i=>R.sprite(i));
   }catch(e){console.error(e);ld.innerHTML='Failed to load: '+e.message;return;}
   ld.remove();

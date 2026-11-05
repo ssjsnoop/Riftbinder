@@ -270,3 +270,11 @@ body.portrait #rotate{display:flex}
   .reveal{gap:14px}.flip{width:min(40vh,170px)}
 }
 @media (max-width:760px){.two{grid-template-columns:1fr}.binderTop{grid-template-columns:1fr}.cdetail{flex-direction:column}}
+
+.hero .panel{width:min(94vw,640px)}
+.heroes{display:flex;gap:10px;justify-content:center;margin:8px 0}
+.hcard{background:#1a1448;border:3px solid #3a2f90;border-radius:14px;padding:6px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:1px;color:#fff;font-size:13px;min-width:0;flex:1}
+.hcard.on{border-color:var(--c);background:#2a2070;box-shadow:0 0 16px var(--c)}
+.hcard b{color:var(--c)}.hcard small{color:var(--muted);font-size:10px}
+.hthumb{width:calc(24px*var(--hs));height:calc(32px*var(--hs));background-size:calc(72px*var(--hs)) calc(128px*var(--hs));background-position:calc(-24px*var(--hs)) 0;background-repeat:no-repeat;image-rendering:pixelated;flex:none}
+@media (max-height:440px){.hthumb{--hs:2.4}}

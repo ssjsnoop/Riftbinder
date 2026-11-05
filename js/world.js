@@ -373,7 +373,7 @@ function update(dt){
     if(d!==world.curDist){world.curDist=d;onDistrict(d);}
     // zone music
     const z=world.zoneAt(p.x,p.y),th=R.DISTRICTS[d];
-    const want=z===2?th.field:th.music;if(want!==world.musicNow){world.musicNow=want;R.music(want);}
+    const want=th.music;if(want!==world.musicNow){world.musicNow=want;R.music(want);}
     world.prompt=promptText(findInteract());
     world.guideT=(world.guideT||0)+dt;
     if(!S.flags.intro&&!world.introAuto){world.introAuto=true;}
@@ -444,13 +444,13 @@ function drawNpcSprite(n,px,py,walk){
     return;
   }
   const im=R.npcImg(n.spr);if(!im)return;
-  const k=SC*.5;
+  const k=SC*.62;
   drawShadow(px,py-1*SC,12);
   ctx.drawImage(im,(walk%3)*24,n.dir*32,24,32,px-12*k,py-30*k,24*k,32*k);
 }
 function drawDaemonWorld(id,px,py,face,anim,mv,size){
   const im=R.sprite(id);if(!im)return;
-  const k=size*SC/80*TS/16;
+  const k=size*TS*SC/80;
   const fr=mv?3+(Math.floor(anim*9)%4):Math.floor(anim*2.6)%3;
   ctx.save();ctx.translate(px,py);ctx.scale(face,1);
   ctx.imageSmoothingEnabled=true;
@@ -542,7 +542,7 @@ function drawWorld(){
   // follower daemon
   {const lead=R.lead();const tr=p.trail,tgt=tr[Math.min(tr.length-1,6)]||p;
     ents.push({y:tgt.y+.01,f:()=>{const px=tgt.x*sz-ox-(p.dir===2?-.0:0)+SC*0,py=tgt.y*sz-oy+sz*.4;drawShadow(px,py-1*SC,13);drawDaemonWorld(lead.id,px,py,(p.x>=tgt.x?1:-1)*1,world.t,p.moving,1.35);}});}
-  ents.push({y:p.y,f:()=>{const px=p.x*sz-ox,py=p.y*sz-oy+sz*.35;drawShadow(px,py-1*SC,12);const im=R.npcImg('hero');if(im){const k=SC*.5,fr=p.moving?[0,1,2,1][Math.floor(p.walk)%4]:1;ctx.drawImage(im,fr*24,p.dir*32,24,32,px-12*k,py-30*k,24*k,32*k);}}});
+  ents.push({y:p.y,f:()=>{const px=p.x*sz-ox,py=p.y*sz-oy+sz*.35;drawShadow(px,py-1*SC,12);const im=R.npcImg('hero_'+((R.S&&R.S.hero)|0));if(im){const k=SC*.62,fr=p.moving?[0,1,2,1][Math.floor(p.walk)%4]:1;ctx.drawImage(im,fr*24,p.dir*32,24,32,px-12*k,py-30*k,24*k,32*k);}}});
   ents.sort((a,b)=>a.y-b.y);for(const e of ents)e.f();
   drawTileLayer(c.tp,x0,y0,x1,y1,ox,oy);
   drawWeather();

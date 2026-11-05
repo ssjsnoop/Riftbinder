@@ -242,12 +242,14 @@ function tabOptions(body){
   const S=R.S,st=S.settings;
   body.innerHTML=`<div class="opts"><div class="orow"><span>Sound effects</span><button class="btn ${st.sound?'':'secondary'}" data-o="sound">${st.sound?'On':'Off'}</button></div><div class="orow"><span>Music</span><button class="btn ${st.music?'':'secondary'}" data-o="music">${st.music?'On':'Off'}</button></div><div class="orow"><span>Screen shake</span><button class="btn ${st.shake?'':'secondary'}" data-o="shake">${st.shake?'On':'Off'}</button></div>
   <div class="orow"><span>Difficulty</span><div class="seg">${['easy','normal','hard'].map(d=>`<button class="${st.diff===d?'on':''}" data-d="${d}">${d}</button>`).join('')}</div></div>
+  <div class="orow"><span>Hero style</span><div class="seg">${R.HEROES.map((h,i)=>`<button class="${(R.S.hero|0)===i?'on':''}" data-hs="${i}">${h.n}</button>`).join('')}</div></div>
   <div class="orow"><span>Guide arrow</span><button class="btn ${R.world.guide?'':'secondary'}" data-o="guide">${R.world.guide?'On':'Off'}</button></div>
   <div class="actions"><button class="btn" data-a="save">💾 Save now</button><button class="btn secondary" data-a="title">Main menu</button><button class="btn danger" data-a="wipe">Delete save</button></div>
   <p class="muted credits">Riftbinder is a mashup of <b>Daemons: Riftbound</b> and <b>Cardbinder Legends</b>. City tiles: <b>Tiny City by Kenney</b> (CC0, kenney.nl).</p></div>`;
   body.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;R.sfx('select');
     if(b.dataset.o){const k=b.dataset.o;if(k==='guide')R.world.guide=!R.world.guide;else{st[k]=!st[k];if(k==='music'){if(st.music)R.music(R.world.musicNow||'town');else G.audio.stop();}}tabOptions(body);return;}
     if(b.dataset.d){st.diff=b.dataset.d;tabOptions(body);return;}
+    if(b.dataset.hs!==undefined){R.S.hero=+b.dataset.hs;tabOptions(body);return;}
     const a=b.dataset.a;
     if(a==='save'){R.save();R.toast('Game saved.');}
     if(a==='title'){R.save();closeMenu();R.world.paused=true;R.titleScreen();}
@@ -308,15 +310,26 @@ async function newGame(){
   const w=R.modal(`<h2>New Binder</h2><p class="muted">What's your name?</p><input id="nameIn" maxlength="12" value="Binder" autocomplete="off"><div class="actions"><button class="btn" data-n>Next ▶</button><button class="btn secondary" data-b>Back</button></div>`,'small');
   w.addEventListener('click',e=>{
     if(e.target.closest('[data-b]')){w.close();R.titleScreen();return;}
-    if(e.target.closest('[data-n]')){const name=($('#nameIn',w).value||'Binder').trim().slice(0,12)||'Binder';w.close();starterPick(name);}
+    if(e.target.closest('[data-n]')){const name=($('#nameIn',w).value||'Binder').trim().slice(0,12)||'Binder';w.close();heroPick(name);}
   });
   setTimeout(()=>{const i=$('#nameIn');if(i){i.focus();i.select();}},50);
 }
-function starterPick(name){
+R.HEROES=[{n:'Azure',w:'Greatsword',c:'#4a74e0'},{n:'Ember',w:'Katana',c:'#e0503c'},{n:'Frost',w:'Spear',c:'#7ad8e8'},{n:'Verdant',w:'Longbow',c:'#6cc070'}];
+R.heroThumb=(i,sc)=>`<div class="hthumb" style="--hs:${sc||3};background-image:url(npcs/hero_${i}.png)"></div>`;
+function heroPick(name){
+  let sel=0;
+  const w=R.modal(`<div class="eyebrow">Your look</div><h2>Choose your Binder</h2><div class="heroes">${R.HEROES.map((h,i)=>`<button class="hcard ${i===0?'on':''}" data-h="${i}" style="--c:${h.c}">${R.heroThumb(i,3)}<b>${h.n}</b><small>${h.w}</small></button>`).join('')}</div><div class="actions"><button class="btn" data-n>Next ▶</button><button class="btn secondary" data-b>Back</button></div>`,'hero');
+  w.addEventListener('click',e=>{
+    const h=e.target.closest('[data-h]');if(h){sel=+h.dataset.h;R.sfx('select');w.querySelectorAll('.hcard').forEach(x=>x.classList.toggle('on',+x.dataset.h===sel));return;}
+    if(e.target.closest('[data-b]')){w.close();newGame();return;}
+    if(e.target.closest('[data-n]')){w.close();starterPick(name,sel);}
+  });
+}
+function starterPick(name,hero){
   const ids=[1,11,21];
   const w=R.modal(`<div class="eyebrow">A new bond</div><h2>Choose your first Daemon</h2><p class="muted">Different elements, different Specials. You can bind the whole roster later.</p><div class="starters">${ids.map(id=>{const d=R.D(id),p=R.POWERS[d.type];return `<button class="creatureCard" data-id="${id}" style="--c:${R.TYPE_COL[d.type]}">${R.spHtml(id,1.0)}<b>${d.name}</b><span>${R.TYPE_ICON[d.type]} ${d.type}</span><small>S ${p[0]} · D ${p[1]}</small></button>`;}).join('')}</div><p class="muted">Fire › Nature · Water › Fire · Nature › Water. Your first choice isn't permanent.</p>`,'starter');
   w.addEventListener('click',async e=>{const b=e.target.closest('[data-id]');if(!b)return;const id=+b.dataset.id;R.sfx('capture');w.close();
-    R.S=R.newState(name,id);
+    R.S=R.newState(name,id);R.S.hero=hero|0;
     const el=R.D2E[R.D(id).type];const cid=R.rollCard(el,0,{bonus:-.4});const res=R.giveCard(cid);
     R.S.seen[id]=true;
     await R.enterWorld();
